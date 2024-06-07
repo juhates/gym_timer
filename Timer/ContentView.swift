@@ -1,4 +1,12 @@
 import SwiftUI
+import UIKit
+import SwiftUI
+
+
+func generateHapticFeedback() {
+    let generator = UIImpactFeedbackGenerator(style: .medium)
+    generator.impactOccurred()
+}
 
 struct ContentView: View {
     @StateObject private var timerApp = TimerApp()
@@ -14,12 +22,6 @@ struct ContentView: View {
         "start": "Start",
         "stop": "Stop",
         "round": "Round",
-        
-        /*
-            "countdown": "Countdown",
-            "training": "Training",
-            "recovery": "Recovery"
-        */
     ]
     
     // Finnish translations
@@ -30,13 +32,6 @@ struct ContentView: View {
         "total_rounds": "Kierrokset",
         "start": "Aloita",
         "stop": "Pysäytä",
-        
-        /*
-            "round": "Kierros",
-            "countdown": "Aloituslaskenta",
-            "training": "Harjoittelu",
-            "recovery": "Palautuminen"
-         */
     ]
 
     var body: some View {
@@ -46,6 +41,7 @@ struct ContentView: View {
                 Spacer()
                 Button(action: {
                     isFinnish.toggle()
+                    generateHapticFeedback()
                 }) {
                     Text(isFinnish ? "English" : "Suomi")
                         .font(.headline)
@@ -101,7 +97,6 @@ struct ContentView: View {
             // Start/Stop button
             HStack(spacing: 20) {
                 Button(action: {
-                    
                         if timerApp.isActive {
                             timerApp.stopTimer()
                             UIApplication.shared.isIdleTimerDisabled = false // Re-enable idle timer
@@ -111,7 +106,7 @@ struct ContentView: View {
                             UIApplication.shared.isIdleTimerDisabled = true // Disable idle timer
                             isTrainingStarted = true
                         }
-                    
+                    generateHapticFeedback()
                 }) {
                     Text(
                         timerApp.isActive ? (isFinnish ? finnishStrings["stop"]! : englishStrings["stop"]!) : (isFinnish ? finnishStrings["start"]! : englishStrings["start"]!))
@@ -135,7 +130,7 @@ struct ContentView: View {
                 }
                 .padding()
                 .transition(.move(edge: .bottom))
-                .animation(.easeInOut(duration: 0.3), value: isTrainingStarted)
+                .animation(.easeInOut(duration: 1), value: isTrainingStarted)
             }
         }
         .padding()
@@ -159,6 +154,7 @@ struct SettingRow: View {
             Spacer()
             HStack {
                 Button(action: {
+                    generateHapticFeedback()
                     if value > 1 {
                         value -= decrement
                     }
@@ -167,12 +163,11 @@ struct SettingRow: View {
                         .font(.title)
                         .foregroundColor(.red)
                 }
-
                 Text("\(value)")
                     .font(.subheadline)
-                    .frame(width: 50)
-
+                    .frame(width: 40)
                 Button(action: {
+                    generateHapticFeedback()
                     value += increment
                 }) {
                     Image(systemName: "plus.circle")

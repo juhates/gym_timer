@@ -2,7 +2,8 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var timerApp = TimerApp()
-    @State private var isFinnish = false
+    @State private var isFinnish = true
+    @State private var isTrainingStarted = false
 
     // English translations
     let englishStrings = [
@@ -31,32 +32,39 @@ struct ContentView: View {
             HStack {
                 Spacer()
                 Button(action: {
-                    isFinnish.toggle()
+                    withAnimation {
+                        isFinnish.toggle()
+                    }
                 }) {
                     Text(isFinnish ? "English" : "Suomi")
                         .font(.headline)
                         .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
+                        .background(Color.white)
+                        .foregroundColor(.black)
                         .cornerRadius(10)
                 }
             }
             .padding()
 
-            Circle()
-                .fill(timerApp.lightColor)
-                .frame(width: 120, height: 120)
-                .shadow(radius: 10)
-                .padding()
+            ZStack {
+                Circle()
+                    .fill(timerApp.lightColor)
+                    .frame(width: 120, height: 120)
+                    .shadow(radius: 10)
+                    .scaleEffect(isTrainingStarted ? 1.1 : 1.0)
+                    .padding()
 
-            Text(timerApp.isCountdown ? (isFinnish ? finnishStrings["get_ready"]! : englishStrings["get_ready"]!) : (timerApp.isTraining ? (isFinnish ? finnishStrings["training_time"]! : englishStrings["training_time"]!) : (isFinnish ? finnishStrings["recovery_time"]! : englishStrings["recovery_time"]!)))
-                .font(.largeTitle)
+                Text("\(timerApp.currentTime)")
+                    .font(.system(size: 50, weight: .bold, design: .monospaced))
+                    .foregroundColor(.white)
+            }
+
+            Text(isFinnish ? (timerApp.isCountdown ? finnishStrings["get_ready"]! : (timerApp.isTraining ? "Harjoittelu" : "Palautuminen")) : (timerApp.isCountdown ? englishStrings["get_ready"]! : (timerApp.isTraining ? "Training" : "Recovery")))
+                .font(.title)
                 .fontWeight(.bold)
+                .foregroundColor(timerApp.isCountdown ? .red : (timerApp.isTraining ? .red : .green))
                 .padding()
-
-            Text("\(timerApp.currentTime)")
-                .font(.system(size: 50, weight: .bold, design: .monospaced))
-                .padding()
+                .transition(.scale)
 
             Text(isFinnish ? "\(finnishStrings["round"]!) \(timerApp.currentRound) / \(timerApp.totalRounds)" : "\(englishStrings["round"]!) \(timerApp.currentRound) / \(timerApp.totalRounds)")
                 .font(.headline)
@@ -72,6 +80,7 @@ struct ContentView: View {
                     } else {
                         timerApp.startTimer()
                         UIApplication.shared.isIdleTimerDisabled = true // Disable idle timer
+                        isTrainingStarted = true
                     }
                 }) {
                     Text(timerApp.isActive ? (isFinnish ? finnishStrings["stop"]! : englishStrings["stop"]!) : (isFinnish ? finnishStrings["start"]! : englishStrings["start"]!))

@@ -15,8 +15,6 @@
 		2A45CA1B2C0A171500E328CD /* TimerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A45CA1A2C0A171500E328CD /* TimerUITests.swift */; };
 		2A45CA1D2C0A171500E328CD /* TimerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A45CA1C2C0A171500E328CD /* TimerUITestsLaunchTests.swift */; };
 		2A45CA2A2C0BBE6700E328CD /* Hero.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 2A45CA292C0BBE6700E328CD /* Hero.aiff */; };
-		2A8305D42C1224A0007AE715 /* Localizable_en.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2A8305D22C12249F007AE715 /* Localizable_en.strings */; };
-		2A8305D72C1224BE007AE715 /* Localizable_fi.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2A8305D52C1224BE007AE715 /* Localizable_fi.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,8 +46,6 @@
 		2A45CA1A2C0A171500E328CD /* TimerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerUITests.swift; sourceTree = "<group>"; };
 		2A45CA1C2C0A171500E328CD /* TimerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		2A45CA292C0BBE6700E328CD /* Hero.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; name = Hero.aiff; path = ../../../../../System/Library/Sounds/Hero.aiff; sourceTree = "<group>"; };
-		2A8305D32C1224A0007AE715 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable_en.strings; sourceTree = "<group>"; };
-		2A8305D62C1224BE007AE715 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable_fi.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,21 +124,11 @@
 		2A45CA192C0A171500E328CD /* TimerUITests */ = {
 			isa = PBXGroup;
 			children = (
-				2A8305D52C1224BE007AE715 /* Localizable_fi.strings */,
-				2A8305D22C12249F007AE715 /* Localizable_en.strings */,
-				2A8305CF2C12240F007AE715 /* Resources */,
 				2A45CA1A2C0A171500E328CD /* TimerUITests.swift */,
 				2A45CA1C2C0A171500E328CD /* TimerUITestsLaunchTests.swift */,
 			);
 			path = TimerUITests;
 			sourceTree = "<group>";
-		};
-		2A8305CF2C12240F007AE715 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Resources;
-			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -250,8 +236,6 @@
 			files = (
 				2A45CA2A2C0BBE6700E328CD /* Hero.aiff in Resources */,
 				2A45CA072C0A171400E328CD /* Preview Assets.xcassets in Resources */,
-				2A8305D42C1224A0007AE715 /* Localizable_en.strings in Resources */,
-				2A8305D72C1224BE007AE715 /* Localizable_fi.strings in Resources */,
 				2A45CA042C0A171400E328CD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -313,25 +297,6 @@
 			targetProxy = 2A45CA172C0A171500E328CD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		2A8305D22C12249F007AE715 /* Localizable_en.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2A8305D32C1224A0007AE715 /* en */,
-			);
-			name = Localizable_en.strings;
-			sourceTree = "<group>";
-		};
-		2A8305D52C1224BE007AE715 /* Localizable_fi.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2A8305D62C1224BE007AE715 /* en */,
-			);
-			name = Localizable_fi.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		2A45CA1E2C0A171500E328CD /* Debug */ = {

@@ -19,7 +19,7 @@ struct ContentView: View {
     // Finnish translations
     let finnishStrings = [
         "get_ready": "Valmistaudu",
-        "training_time": "Harjoitusaika",
+        "training_time": "Harjoittelu",
         "recovery_time": "Palautumisaika",
         "total_rounds": "Kokonaiskierrokset",
         "start": "Aloita",
@@ -49,38 +49,47 @@ struct ContentView: View {
             ZStack {
                 Circle()
                     .fill(timerApp.lightColor)
-                    .frame(width: 120, height: 120)
+                    .frame(width: isTrainingStarted ? 300 : 120, height: isTrainingStarted ? 300 : 120)
                     .shadow(radius: 10)
-                    .scaleEffect(isTrainingStarted ? 1.1 : 1.0)
+                    .scaleEffect(isTrainingStarted ? 1.2 : 1.0)
+                    .animation(.easeInOut(duration: 0.3), value: isTrainingStarted)
                     .padding()
 
                 Text("\(timerApp.currentTime)")
-                    .font(.system(size: 50, weight: .bold, design: .monospaced))
+                    .font(.system(size: isTrainingStarted ? 100 : 50, weight: .bold, design: .monospaced))
                     .foregroundColor(.white)
+                    .animation(.easeInOut(duration: 0.3), value: isTrainingStarted)
             }
 
-            Text(isFinnish ? (timerApp.isCountdown ? finnishStrings["get_ready"]! : (timerApp.isTraining ? "Harjoittelu" : "Palautuminen")) : (timerApp.isCountdown ? englishStrings["get_ready"]! : (timerApp.isTraining ? "Training" : "Recovery")))
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundColor(timerApp.isCountdown ? .red : (timerApp.isTraining ? .red : .green))
-                .padding()
-                .transition(.scale)
+            if !isTrainingStarted {
+                Text(isFinnish ? (timerApp.isCountdown ? finnishStrings["get_ready"]! : (timerApp.isTraining ? "Harjoittelu" : "Palautuminen")) : (timerApp.isCountdown ? englishStrings["get_ready"]! : (timerApp.isTraining ? "Training" : "Recovery")))
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundColor(timerApp.isCountdown ? .red : (timerApp.isTraining ? .red : .green))
+                    .padding()
+                    .transition(.scale)
+            }
 
-            Text(isFinnish ? "\(finnishStrings["round"]!) \(timerApp.currentRound) / \(timerApp.totalRounds)" : "\(englishStrings["round"]!) \(timerApp.currentRound) / \(timerApp.totalRounds)")
-                .font(.headline)
-                .padding()
+            if !isTrainingStarted {
+                Text(isFinnish ? "\(finnishStrings["round"]!) \(timerApp.currentRound) / \(timerApp.totalRounds)" : "\(englishStrings["round"]!) \(timerApp.currentRound) / \(timerApp.totalRounds)")
+                    .font(.headline)
+                    .padding()
+            }
 
             Spacer()
 
             HStack(spacing: 20) {
                 Button(action: {
-                    if timerApp.isActive {
-                        timerApp.stopTimer()
-                        UIApplication.shared.isIdleTimerDisabled = false // Re-enable idle timer
-                    } else {
-                        timerApp.startTimer()
-                        UIApplication.shared.isIdleTimerDisabled = true // Disable idle timer
-                        isTrainingStarted = true
+                    withAnimation {
+                        if timerApp.isActive {
+                            timerApp.stopTimer()
+                            UIApplication.shared.isIdleTimerDisabled = false // Re-enable idle timer
+                            isTrainingStarted = false
+                        } else {
+                            timerApp.startTimer()
+                            UIApplication.shared.isIdleTimerDisabled = true // Disable idle timer
+                            isTrainingStarted = true
+                        }
                     }
                 }) {
                     Text(timerApp.isActive ? (isFinnish ? finnishStrings["stop"]! : englishStrings["stop"]!) : (isFinnish ? finnishStrings["start"]! : englishStrings["start"]!))
@@ -92,14 +101,19 @@ struct ContentView: View {
                         .shadow(radius: 5)
                 }
             }
-            .padding()
+            .padding(.bottom, isTrainingStarted ? 50 : 20)
+            .animation(.easeInOut(duration: 0.3), value: isTrainingStarted)
 
-            VStack(alignment: .leading, spacing: 10) {
-                SettingRow(label: isFinnish ? finnishStrings["training_time"]! : englishStrings["training_time"]!, value: $timerApp.trainingTime, range: 10...600)
-                SettingRow(label: isFinnish ? finnishStrings["recovery_time"]! : englishStrings["recovery_time"]!, value: $timerApp.recoveryTime, range: 10...600)
-                SettingRow(label: isFinnish ? finnishStrings["total_rounds"]! : englishStrings["total_rounds"]!, value: $timerApp.totalRounds, range: 1...20)
+            if !isTrainingStarted {
+                VStack(alignment: .leading, spacing: 10) {
+                    SettingRow(label: isFinnish ? finnishStrings["training_time"]! : englishStrings["training_time"]!, value: $timerApp.trainingTime, increment: 10, decrement: 10)
+                    SettingRow(label: isFinnish ? finnishStrings["recovery_time"]! : englishStrings["recovery_time"]!, value: $timerApp.recoveryTime, increment: 10, decrement: 10)
+                    SettingRow(label: isFinnish ? finnishStrings["total_rounds"]! : englishStrings["total_rounds"]!, value: $timerApp.totalRounds, increment: 1, decrement: 1)
+                }
+                .padding()
+                .transition(.move(edge: .bottom))
+                .animation(.easeInOut(duration: 0.3), value: isTrainingStarted)
             }
-            .padding()
         }
         .padding()
         .onDisappear {
@@ -112,7 +126,8 @@ struct ContentView: View {
 struct SettingRow: View {
     var label: String
     @Binding var value: Int
-    var range: ClosedRange<Int>
+    var increment: Int
+    var decrement: Int
 
     var body: some View {
         HStack {
@@ -120,12 +135,28 @@ struct SettingRow: View {
                 .font(.headline)
             Spacer()
             HStack {
+                Button(action: {
+                    if value > 1 {
+                        value -= decrement
+                    }
+                }) {
+                    Image(systemName: "minus.circle")
+                        .font(.title)
+                        .foregroundColor(.red)
+                }
+
                 Text("\(value)")
                     .font(.subheadline)
-                Stepper("", value: $value, in: range)
-                    .labelsHidden()
+                    .frame(width: 50)
+
+                Button(action: {
+                    value += increment
+                }) {
+                    Image(systemName: "plus.circle")
+                        .font(.title)
+                        .foregroundColor(.green)
+                }
             }
-            .frame(width: 120)
         }
         .padding(.vertical, 5)
     }

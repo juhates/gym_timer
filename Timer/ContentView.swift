@@ -14,27 +14,38 @@ struct ContentView: View {
         "start": "Start",
         "stop": "Stop",
         "round": "Round",
+        
+        /*
+            "countdown": "Countdown",
+            "training": "Training",
+            "recovery": "Recovery"
+        */
     ]
     
     // Finnish translations
     let finnishStrings = [
         "get_ready": "Valmistaudu",
-        "training_time": "Harjoittelu",
-        "recovery_time": "Palautumisaika",
-        "total_rounds": "Kokonaiskierrokset",
+        "training_time": "Treeni",
+        "recovery_time": "Lepo",
+        "total_rounds": "Kierrokset",
         "start": "Aloita",
         "stop": "Pysäytä",
-        "round": "Kierros",
+        
+        /*
+            "round": "Kierros",
+            "countdown": "Aloituslaskenta",
+            "training": "Harjoittelu",
+            "recovery": "Palautuminen"
+         */
     ]
 
     var body: some View {
         VStack(spacing: 20) {
+            // Language toggle button
             HStack {
                 Spacer()
                 Button(action: {
-                    withAnimation {
-                        isFinnish.toggle()
-                    }
+                    isFinnish.toggle()
                 }) {
                     Text(isFinnish ? "English" : "Suomi")
                         .font(.headline)
@@ -44,14 +55,19 @@ struct ContentView: View {
                         .cornerRadius(10)
                 }
             }
+            
             .padding()
 
+            // Circle with countdown or timer
             ZStack {
                 Circle()
-                    .fill(timerApp.lightColor)
-                    .frame(width: isTrainingStarted ? 300 : 120, height: isTrainingStarted ? 300 : 120)
+                    // Red for countdown, Green for training, Blue for recovery
+                    .fill(timerApp.isCountdown ? Color.red :                        (timerApp.isTraining ? Color.green : Color.blue))
+                    .frame(
+                        width: isTrainingStarted ? 300 : 120,
+                        height: isTrainingStarted ? 300 : 120)
                     .shadow(radius: 10)
-                    .scaleEffect(isTrainingStarted ? 1.2 : 1.0)
+                    .scaleEffect(isTrainingStarted ? 5.3 : 1.0)
                     .animation(.easeInOut(duration: 0.3), value: isTrainingStarted)
                     .padding()
 
@@ -61,26 +77,31 @@ struct ContentView: View {
                     .animation(.easeInOut(duration: 0.3), value: isTrainingStarted)
             }
 
-            if !isTrainingStarted {
-                Text(isFinnish ? (timerApp.isCountdown ? finnishStrings["get_ready"]! : (timerApp.isTraining ? "Harjoittelu" : "Palautuminen")) : (timerApp.isCountdown ? englishStrings["get_ready"]! : (timerApp.isTraining ? "Training" : "Recovery")))
+            // Training or Recovery text
+            if !timerApp.isCountdown {
+                Text(isFinnish ? (timerApp.isTraining ? finnishStrings["training_time"]! : finnishStrings["recovery_time"]!) : (timerApp.isTraining ? englishStrings["training_time"]! : englishStrings["recovery_time"]!))
                     .font(.title)
                     .fontWeight(.bold)
-                    .foregroundColor(timerApp.isCountdown ? .red : (timerApp.isTraining ? .red : .green))
+                    .foregroundColor(.white)
                     .padding()
                     .transition(.scale)
             }
 
-            if !isTrainingStarted {
-                Text(isFinnish ? "\(finnishStrings["round"]!) \(timerApp.currentRound) / \(timerApp.totalRounds)" : "\(englishStrings["round"]!) \(timerApp.currentRound) / \(timerApp.totalRounds)")
+            // Round information
+            if isTrainingStarted {
+                Text(isFinnish ? "\(finnishStrings["total_rounds"]!) \(timerApp.currentRound) / \(timerApp.totalRounds)" : "\(englishStrings["total_rounds"]!) \(timerApp.currentRound) / \(timerApp.totalRounds)")
                     .font(.headline)
                     .padding()
+                    .colorInvert()
+                    .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
             }
 
             Spacer()
 
+            // Start/Stop button
             HStack(spacing: 20) {
                 Button(action: {
-                    withAnimation {
+                    
                         if timerApp.isActive {
                             timerApp.stopTimer()
                             UIApplication.shared.isIdleTimerDisabled = false // Re-enable idle timer
@@ -90,12 +111,13 @@ struct ContentView: View {
                             UIApplication.shared.isIdleTimerDisabled = true // Disable idle timer
                             isTrainingStarted = true
                         }
-                    }
+                    
                 }) {
-                    Text(timerApp.isActive ? (isFinnish ? finnishStrings["stop"]! : englishStrings["stop"]!) : (isFinnish ? finnishStrings["start"]! : englishStrings["start"]!))
+                    Text(
+                        timerApp.isActive ? (isFinnish ? finnishStrings["stop"]! : englishStrings["stop"]!) : (isFinnish ? finnishStrings["start"]! : englishStrings["start"]!))
                         .font(.title)
-                        .frame(width: 100, height: 50)
-                        .background(timerApp.isActive ? Color.red : Color.green)
+                        .frame(width: 200, height: 60)
+                        .background(timerApp.isActive ? Color.red : Color.black)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .shadow(radius: 5)
@@ -104,6 +126,7 @@ struct ContentView: View {
             .padding(.bottom, isTrainingStarted ? 50 : 20)
             .animation(.easeInOut(duration: 0.3), value: isTrainingStarted)
 
+            // Setting rows with slide down transition
             if !isTrainingStarted {
                 VStack(alignment: .leading, spacing: 10) {
                     SettingRow(label: isFinnish ? finnishStrings["training_time"]! : englishStrings["training_time"]!, value: $timerApp.trainingTime, increment: 10, decrement: 10)

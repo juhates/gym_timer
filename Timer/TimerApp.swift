@@ -11,7 +11,7 @@ class TimerApp: ObservableObject {
     @Published var isTraining: Bool = true
     @Published var isActive: Bool = false
     @Published var isCountdown: Bool = true
-    @Published var lightColor: Color = .red // Red for training, green for recovery
+    @Published var lightColor: Color = .red // Red for training, blue for recovery
 
     var timer: Timer?
     var audioPlayer: AVAudioPlayer?
@@ -25,7 +25,7 @@ class TimerApp: ObservableObject {
         self.isTraining = true
         self.isActive = true
         self.isCountdown = true
-        self.currentTime = 5 // 5 seconds countdown
+        self.currentTime = 5 // 5 seconds countdown at the start
         self.lightColor = .red
         runTimer()
     }
@@ -41,7 +41,7 @@ class TimerApp: ObservableObject {
                     self.currentTime = self.isTraining ? self.trainingTime : self.recoveryTime
                 } else if self.isTraining {
                     self.isTraining = false
-                    self.lightColor = .green
+                    self.lightColor = .blue
                     self.currentTime = self.recoveryTime
                 } else {
                     self.currentRound += 1
@@ -52,8 +52,7 @@ class TimerApp: ObservableObject {
                     }
                     self.isTraining = true
                     self.lightColor = .red
-                    self.isCountdown = true
-                    self.currentTime = 5 // 5 seconds countdown
+                    self.currentTime = self.trainingTime
                 }
             }
         }
@@ -67,7 +66,6 @@ class TimerApp: ObservableObject {
         self.isCountdown = true
         self.lightColor = .red
     }
-
 
     private func loadSound() {
         if let soundURL = Bundle.main.url(forResource: "Hero", withExtension: "aiff") {
